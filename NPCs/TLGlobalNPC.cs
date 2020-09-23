@@ -1,4 +1,5 @@
 ﻿using TerraLands.Items.Weapons.Guns;
+using TerraLands.Items.Weapons.Guns.Legendaries;
 using TerraLands.Utils;
 using Terraria;
 using Terraria.ID;
