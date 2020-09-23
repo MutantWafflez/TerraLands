@@ -12,6 +12,15 @@ namespace TerraLands.Utils
         Special,
     }
 
+    public enum SuffixRarity
+    {
+        Common,
+        Uncommon,
+        Rare,
+        Epic,
+        Legendary
+    }
+
     public enum TLRarities
     {
         Common = ItemRarityID.White,

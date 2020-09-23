@@ -28,6 +28,8 @@ namespace TerraLands.Items.Weapons
         public TLPrefix itemPrefix = TLPrefixList.Default;
         public WeightedRandom<TLPrefix> availablePrefixes = new WeightedRandom<TLPrefix>();
 
+        public TLSuffix itemSuffix = TLSuffixList.Default;
+
         public ElementType itemElement = ElementType.Default;
         public WeightedRandom<ElementType> availableElements = new WeightedRandom<ElementType>();
 
