@@ -66,13 +66,17 @@ namespace TerraLands.Items.Weapons
             }
             wepClone.additionalShots = 0;
             wepClone.fixedSpread = 0f;
-            if (itemPrefix == TLPrefixList.Default)
+            if (wepClone.itemPrefix == TLPrefixList.Default)
             {
                 wepClone.itemPrefix = availablePrefixes.Get();
-                wepClone.item.ClearNameOverride();
-                wepClone.item.SetNameOverride(GetPrefixedName());
+                wepClone.item.SetNameOverride(GetAdjustedName());
             }
-            if (itemElement == ElementType.Default)
+            if (wepClone.itemSuffix == TLSuffixList.Default)
+            {
+                wepClone.itemSuffix = TLSuffixList.GetRandomSuffix();
+                wepClone.item.SetNameOverride(GetAdjustedName());
+            }
+            if (wepClone.itemElement == ElementType.Default)
             {
                 wepClone.itemElement = availableElements.Get();
             }
@@ -99,7 +103,12 @@ namespace TerraLands.Items.Weapons
                 if (itemPrefix == TLPrefixList.Default)
                 {
                     itemPrefix = availablePrefixes.Get();
-                    item.SetNameOverride(GetPrefixedName());
+                    item.SetNameOverride(GetAdjustedName());
+                }
+                if (itemSuffix == TLSuffixList.Default)
+                {
+                    itemSuffix = TLSuffixList.GetRandomSuffix();
+                    item.SetNameOverride(GetAdjustedName());
                 }
                 GetAvailableElements();
                 if (itemElement == ElementType.Default)
@@ -203,7 +212,8 @@ namespace TerraLands.Items.Weapons
             return new TagCompound
             {
                 {"WeaponPrefix", itemPrefix.TLPrefixID},
-                {"WeaponElement", (int)itemElement }
+                {"WeaponElement", (int)itemElement },
+                {"WeaponSuffix", itemSuffix.suffixID }
             };
         }
 
@@ -211,6 +221,7 @@ namespace TerraLands.Items.Weapons
         {
             itemPrefix = TLPrefixList.GetInstanceWithID(tag.GetInt("WeaponPrefix"));
             itemElement = (ElementType)tag.GetInt("WeaponElement");
+            itemSuffix = TLSuffixList.GetInstanceWithID(tag.GetInt("WeaponSuffix"));
         }
 
         //Just for some sweet sweet multiplayer compatability :-) (AKA send the item prefix data upon throwing the item into the world, for example)
@@ -218,20 +229,22 @@ namespace TerraLands.Items.Weapons
         {
             writer.Write(itemPrefix.TLPrefixID);
             writer.Write((int)itemElement);
+            writer.Write(itemSuffix.suffixID);
         }
 
         public override void NetRecieve(BinaryReader reader)
         {
             itemPrefix = TLPrefixList.GetInstanceWithID(reader.ReadInt32());
             itemElement = (ElementType)reader.ReadInt32();
+            itemSuffix = TLSuffixList.GetInstanceWithID(reader.ReadInt32());
         }
         #endregion
 
         #region Per Tick Hooks
 
-        public override void PostUpdate() => item.SetNameOverride(GetPrefixedName());
+        public override void PostUpdate() => item.SetNameOverride(GetAdjustedName());
 
-        public override void UpdateInventory(Player player) => item.SetNameOverride(GetPrefixedName());
+        public override void UpdateInventory(Player player) => item.SetNameOverride(GetAdjustedName());
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
@@ -400,22 +413,23 @@ namespace TerraLands.Items.Weapons
         /// </summary>
         public virtual void GetAvailableElements()
         {
-            availableElements.Add(ElementType.None, 1.5f);
+            availableElements.Add(ElementType.None, 1.25f);
             availableElements.Add(ElementType.Explosive, 0.75f);
             availableElements.Add(ElementType.Fire, 0.75f);
             availableElements.Add(ElementType.Shock, 0.75f);
             availableElements.Add(ElementType.Corrosive, 0.75f);
             availableElements.Add(ElementType.Cryo, 0.75f);
+            availableElements.Add(ElementType.Radiated, 0.75f);
         }
 
         /// <summary>
-        /// Returns a string of the item's prefix + item's name concatenated.
+        /// Returns the base item's name with the proper prefix and suffix attached.
         /// </summary>
-        public string GetPrefixedName()
+        public string GetAdjustedName()
         {
             item.ClearNameOverride();
             string clearedName = item.Name;
-            return string.Concat(itemPrefix.prefixText, " ", clearedName);
+            return string.Concat(itemPrefix.prefixText + " ", clearedName, " of ", itemSuffix.suffixText);
         }
         #endregion
     }
