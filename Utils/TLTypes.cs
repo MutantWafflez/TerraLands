@@ -41,6 +41,7 @@ namespace TerraLands.Utils
         Fire,
         Shock,
         Corrosive,
-        Cryo
+        Cryo,
+        Radiated
     }
 }
