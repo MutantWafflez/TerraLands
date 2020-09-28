@@ -41,8 +41,10 @@ namespace TerraLands.Projectiles
             {
                 Main.PlaySound(SoundID.Item62.WithVolume(0.5f), projectile.Center);
             }
+            projectile.position = projectile.Center;
             projectile.width = 60;
             projectile.height = 60;
+            projectile.Center = projectile.position;
             projectile.hide = true;
             projectile.velocity = Vector2.Zero;
             for (int i = 0; i < 10; i++)
