@@ -13,11 +13,7 @@ namespace TerraLands.TLPrefixes
         public static readonly TLSuffix Default = new TLSuffix(
             suffixID: -1,
             "Defaulcy",
-            suffixRarity: SuffixRarity.Common,
-            delegate(Player player)
-            {
-                player.AddBuff(BuffID.Ironskin, 60);
-            }
+            suffixRarity: SuffixRarity.Common
             );
 
         public static readonly TLSuffix Omnipercipiency = new TLSuffix(
