@@ -206,7 +206,7 @@ namespace TerraLands.Items.Weapons
         #endregion
 
         #region I/O
-        //Since we can't save our itemPrefix field directly, gotta save/load with its ID.
+        //Since we can't save our itemPrefix/Suffix field directly, gotta save/load with its ID.
         public override TagCompound Save()
         {
             return new TagCompound

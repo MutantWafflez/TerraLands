@@ -1,10 +1,8 @@
-﻿using TerraLands.Utils;
-using Terraria;
-using System.Linq;
-using Terraria.ID;
-using System.Reflection;
-using Terraria.ModLoader;
+﻿using System.Reflection;
 using TerraLands.Buffs;
+using TerraLands.Utils;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace TerraLands.TLPrefixes
 {
@@ -20,7 +18,7 @@ namespace TerraLands.TLPrefixes
             suffixID: 1,
             "Omnipercipiency",
             suffixRarity: SuffixRarity.Legendary,
-            delegate(Player player)
+            delegate (Player player)
             {
                 player.AddBuff(ModContent.BuffType<Omnipercipiency>(), 5);
             }

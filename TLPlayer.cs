@@ -1,7 +1,4 @@
-﻿using System;
-using TerraLands.Items.Weapons;
-using TerraLands.TLPrefixes;
-using Terraria;
+﻿using TerraLands.Items.Weapons;
 using Terraria.ModLoader;
 
 namespace TerraLands
@@ -10,7 +7,7 @@ namespace TerraLands
     {
         public override void PostUpdate()
         {
-            if (player.HeldItem.modItem != null) 
+            if (player.HeldItem.modItem != null)
             {
                 ((TLWeapon)player.HeldItem.modItem).itemSuffix.playerUpdateMethod?.Invoke(player);
             }

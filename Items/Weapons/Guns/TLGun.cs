@@ -1,12 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using TerraLands.Projectiles;
-using TerraLands.Projectiles.UniqueProj;
+﻿using System.Collections.Generic;
 using TerraLands.TLPrefixes;
 using TerraLands.Utils;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace TerraLands.Items.Weapons.Guns
 {
