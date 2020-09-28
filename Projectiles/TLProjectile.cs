@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using TerraLands.NPCs;
 using TerraLands.Utils;
 using Terraria;
 using Terraria.ID;
@@ -33,6 +34,11 @@ namespace TerraLands.Projectiles
                 ExplodeProjectile();
                 explosiveTimer++;
             }
+        }
+
+        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        {
+            target.GetGlobalNPC<TLGlobalNPC>().elementHitBy = projectileElement;
         }
 
         private void ExplodeProjectile()

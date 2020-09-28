@@ -4,7 +4,7 @@ using Terraria.ID;
 
 namespace TerraLands.Utils
 {
-    internal static class TLUtils
+    public static class TLUtils
     {
         /// <summary>
         /// Turns a item.rare into its respective TerraLands rarity color. Returns Color.White by default.
@@ -60,13 +60,15 @@ namespace TerraLands.Utils
             if (element == ElementType.Explosive)
                 return Colors.RarityYellow;
             else if (element == ElementType.Fire)
-                return Colors.RarityRed;
+                return Colors.RarityOrange;
             else if (element == ElementType.Shock)
                 return Colors.RarityBlue;
             else if (element == ElementType.Corrosive)
                 return Colors.RarityGreen;
             else if (element == ElementType.Cryo)
                 return Colors.RarityCyan;
+            else if (element == ElementType.Radiated)
+                return Colors.RarityLime;
             return Color.White;
         }
 
