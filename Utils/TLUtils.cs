@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ID;
 
@@ -78,6 +79,17 @@ namespace TerraLands.Utils
         public static int NewTLItem(Rectangle spawnRectangle, int Type, int Stack = 1, bool noBroadcast = false, int prefixGiven = -1, bool noGrabDelay = false, bool reverseLookup = false)
         {
             return Item.NewItem(spawnRectangle, Type, Stack, noBroadcast, prefixGiven, noGrabDelay, reverseLookup);
+        }
+
+        /// <summary>
+        /// Method that returns the threshold needed to be passed to level up.
+        /// Up until level 30, uses the equation 45x^2.75 - 45.
+        /// For level 30 and beyond, uses the eqatuion 45x^2.75 - 45 - 45x^1.67.
+        /// </summary>
+        /// <param name="currentLevel"></param>
+        public static int XPRequiredToLevelUp(int currentLevel)
+        {
+            return (int)(currentLevel < 30 ? (45f * Math.Pow(currentLevel + 1f, 2.75f)) - 45f : (45f * Math.Pow(currentLevel + 1f, 2.75f)) - 45f - (45f * Math.Pow(currentLevel + 1f, 1.67f)));
         }
     }
 }

@@ -44,4 +44,10 @@ namespace TerraLands.Utils
         Cryo,
         Radiated
     }
+
+    public enum TLPacketType : byte
+    {
+        SyncJoiningPlayer,
+        SyncLevelData
+    }
 }
