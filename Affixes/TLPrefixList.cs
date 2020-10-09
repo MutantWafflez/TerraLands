@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using TerraLands.Utils;
+using TerraLands.Enums;
 
-namespace TerraLands.TLPrefixes
-{
+namespace TerraLands.TLPrefixes {
     /// <summary>
     /// Class full of all of the TLPrefixes. Has a few helper methods for getting IDs, types, or text.
     /// </summary>
-    public static class TLPrefixList
-    {
+    public static class TLPrefixList {
         #region Prefixes
         public static readonly TLPrefix Default = new TLPrefix(
             prefixID: 0,
@@ -58,15 +56,11 @@ namespace TerraLands.TLPrefixes
         /// <summary>
         /// Returns the TLPrefix instance of the given ID.
         /// </summary>
-        public static TLPrefix GetInstanceWithID(int ID)
-        {
+        public static TLPrefix GetInstanceWithID(int ID) {
             FieldInfo[] fieldInfoList = typeof(TLPrefixList).GetFields();
-            foreach (FieldInfo field in fieldInfoList)
-            {
-                if (field.FieldType == typeof(TLPrefix))
-                {
-                    if (((TLPrefix)field.GetValue(field)).TLPrefixID == ID)
-                    {
+            foreach (FieldInfo field in fieldInfoList) {
+                if (field.FieldType == typeof(TLPrefix)) {
+                    if (((TLPrefix)field.GetValue(field)).TLPrefixID == ID) {
                         return (TLPrefix)field.GetValue(field);
                     }
                 }
@@ -78,16 +72,12 @@ namespace TerraLands.TLPrefixes
         /// Returns a list of available TL Prefixes that all share the type of PrefixType passed through.
         /// Will return an empty list if none exist or if an error occurs.
         /// </summary>
-        public static List<TLPrefix> GetListOfPrefixesWithType(PrefixType prefixType)
-        {
+        public static List<TLPrefix> GetListOfPrefixesWithType(PrefixType prefixType) {
             FieldInfo[] fieldInfoArray = typeof(TLPrefixList).GetFields();
             List<TLPrefix> listOfAvailablePrefixes = new List<TLPrefix>();
-            foreach (FieldInfo field in fieldInfoArray)
-            {
-                if (field.FieldType == typeof(TLPrefix))
-                {
-                    if (((TLPrefix)field.GetValue(field)).prefixType == prefixType)
-                    {
+            foreach (FieldInfo field in fieldInfoArray) {
+                if (field.FieldType == typeof(TLPrefix)) {
+                    if (((TLPrefix)field.GetValue(field)).prefixType == prefixType) {
                         listOfAvailablePrefixes.Add((TLPrefix)field.GetValue(field));
                     }
                 }

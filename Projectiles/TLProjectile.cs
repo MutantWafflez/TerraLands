@@ -1,22 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
+using TerraLands.Enums;
 using TerraLands.NPCs;
-using TerraLands.Utils;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace TerraLands.Projectiles
-{
-    public abstract class TLProjectile : ModProjectile
-    {
+namespace TerraLands.Projectiles {
+    public abstract class TLProjectile : ModProjectile {
         public ElementType projectileElement = ElementType.Default;
 
         public int explosiveTimer = 0;
 
         public override string Texture => "Terraria/Projectile_" + ProjectileID.Bullet;
 
-        public override void SetDefaults()
-        {
+        public override void SetDefaults() {
             projectile.CloneDefaults(ProjectileID.Bullet);
             projectile.arrow = false;
             projectile.penetrate = 1;
@@ -27,24 +24,19 @@ namespace TerraLands.Projectiles
             aiType = ProjectileID.Bullet;
         }
 
-        public override void Kill(int timeLeft)
-        {
-            if (projectileElement == ElementType.Explosive && explosiveTimer < 5)
-            {
+        public override void Kill(int timeLeft) {
+            if (projectileElement == ElementType.Explosive && explosiveTimer < 5) {
                 ExplodeProjectile();
                 explosiveTimer++;
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
-        {
+        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection) {
             target.GetGlobalNPC<TLGlobalNPC>().elementHitBy = projectileElement;
         }
 
-        private void ExplodeProjectile()
-        {
-            if (explosiveTimer == 0)
-            {
+        private void ExplodeProjectile() {
+            if (explosiveTimer == 0) {
                 Main.PlaySound(SoundID.Item62.WithVolume(0.5f), projectile.Center);
             }
             projectile.position = projectile.Center;
@@ -53,8 +45,7 @@ namespace TerraLands.Projectiles
             projectile.Center = projectile.position;
             projectile.hide = true;
             projectile.velocity = Vector2.Zero;
-            for (int i = 0; i < 10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 Dust.NewDust(projectile.position, projectile.width, projectile.height, DustID.Dirt);
             }
         }

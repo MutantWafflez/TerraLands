@@ -1,12 +1,10 @@
-﻿using TerraLands.Utils;
+﻿using TerraLands.Enums;
 
-namespace TerraLands.TLPrefixes
-{
+namespace TerraLands.TLPrefixes {
     /// <summary>
     /// Class used for the creation of custom TerraLands prefixes. Must be declared with an ID, Prefix Text Value, and Prefix Type. All stat multipliers are optional.
     /// </summary>
-    public class TLPrefix
-    {
+    public class TLPrefix {
         public readonly int TLPrefixID;
 
         public readonly string prefixText;
@@ -59,8 +57,7 @@ namespace TerraLands.TLPrefixes
         /// </summary>
         public readonly float accuracyMultiplier;
 
-        public TLPrefix(int prefixID, string preText, PrefixType preType, float rngWeight = 1f, float dmgMult = 1f, int critChanceMod = 0, float critDmgMult = 1f, float useSpeedMult = 1f, float velocityMult = 1f, float scaleMult = 1f, float knockMult = 1f, float accMult = 1f)
-        {
+        public TLPrefix(int prefixID, string preText, PrefixType preType, float rngWeight = 1f, float dmgMult = 1f, int critChanceMod = 0, float critDmgMult = 1f, float useSpeedMult = 1f, float velocityMult = 1f, float scaleMult = 1f, float knockMult = 1f, float accMult = 1f) {
             TLPrefixID = prefixID;
             prefixText = preText;
             prefixType = preType;

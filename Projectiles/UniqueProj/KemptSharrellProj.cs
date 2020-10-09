@@ -3,20 +3,15 @@ using System.IO;
 using Terraria;
 using Terraria.ID;
 
-namespace TerraLands.Projectiles.UniqueProj
-{
-    public class KemptSharrellProj : TLProjectile
-    {
+namespace TerraLands.Projectiles.UniqueProj {
+    public class KemptSharrellProj : TLProjectile {
         private int splitTimer = 0;
 
         public bool hasSplit = false;
 
-        public override void AI()
-        {
-            if (!hasSplit)
-            {
-                if (++splitTimer > 45 && Main.netMode != NetmodeID.MultiplayerClient)
-                {
+        public override void AI() {
+            if (!hasSplit) {
+                if (++splitTimer > 45 && Main.netMode != NetmodeID.MultiplayerClient) {
                     hasSplit = true;
 
                     float angleVariation = 5f;
@@ -32,14 +27,12 @@ namespace TerraLands.Projectiles.UniqueProj
             }
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
+        public override void SendExtraAI(BinaryWriter writer) {
             writer.Write(splitTimer);
             writer.Write(hasSplit);
         }
 
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
+        public override void ReceiveExtraAI(BinaryReader reader) {
             splitTimer = reader.ReadInt32();
             hasSplit = reader.ReadBoolean();
         }

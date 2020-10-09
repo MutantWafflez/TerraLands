@@ -1,17 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using TerraLands.Enums;
 using Terraria;
 using Terraria.ID;
 
-namespace TerraLands.Utils
-{
-    public static class TLUtils
-    {
+namespace TerraLands.Utils {
+    public static class TLUtils {
         /// <summary>
         /// Turns a item.rare into its respective TerraLands rarity color. Returns Color.White by default.
         /// </summary>
-        public static Color ItemRareToTLRareColor(int itemRare)
-        {
+        public static Color ItemRareToTLRareColor(int itemRare) {
             if (itemRare == ItemRarityID.Green)
                 return Colors.RarityGreen;
             else if (itemRare == ItemRarityID.Blue)
@@ -33,8 +31,7 @@ namespace TerraLands.Utils
         /// <summary>
         /// Turns a item.rare into its respective TerraLands rarity name. Returns "Common" by default.
         /// </summary>
-        public static string ItemRareToTLRareName(int itemRare)
-        {
+        public static string ItemRareToTLRareName(int itemRare) {
             if (itemRare == ItemRarityID.Green)
                 return "Uncommon";
             else if (itemRare == ItemRarityID.Blue)
@@ -56,8 +53,7 @@ namespace TerraLands.Utils
         /// <summary>
         /// Converts a given ElementType to its Color counterpart. If an Default or None is passed, Color.White is returned.
         /// </summary>
-        public static Color ItemElementToColor(ElementType element)
-        {
+        public static Color ItemElementToColor(ElementType element) {
             if (element == ElementType.Explosive)
                 return Colors.RarityYellow;
             else if (element == ElementType.Fire)
@@ -76,8 +72,7 @@ namespace TerraLands.Utils
         /// <summary>
         /// Little helper method to make sure TerraLands weapons spawn and get their random prefix (Since Item.NewItem doesn't have PrefixGiven set to -1)
         /// </summary>
-        public static int NewTLItem(Rectangle spawnRectangle, int Type, int Stack = 1, bool noBroadcast = false, int prefixGiven = -1, bool noGrabDelay = false, bool reverseLookup = false)
-        {
+        public static int NewTLItem(Rectangle spawnRectangle, int Type, int Stack = 1, bool noBroadcast = false, int prefixGiven = -1, bool noGrabDelay = false, bool reverseLookup = false) {
             return Item.NewItem(spawnRectangle, Type, Stack, noBroadcast, prefixGiven, noGrabDelay, reverseLookup);
         }
 
@@ -87,8 +82,7 @@ namespace TerraLands.Utils
         /// For level 30 and beyond, uses the eqatuion 45x^2.75 - 45 - 45x^1.67.
         /// </summary>
         /// <param name="currentLevel"></param>
-        public static int XPRequiredToLevelUp(int currentLevel)
-        {
+        public static int XPRequiredToLevelUp(int currentLevel) {
             return (int)(currentLevel < 30 ? (45f * Math.Pow(currentLevel + 1f, 2.75f)) - 45f : (45f * Math.Pow(currentLevel + 1f, 2.75f)) - 45f - (45f * Math.Pow(currentLevel + 1f, 1.67f)));
         }
     }

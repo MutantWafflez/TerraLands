@@ -1,10 +1,8 @@
-﻿using TerraLands.Utils;
+﻿using TerraLands.Enums;
 using Terraria;
 
-namespace TerraLands.TLPrefixes
-{
-    public class TLSuffix
-    {
+namespace TerraLands.TLPrefixes {
+    public class TLSuffix {
         public readonly int suffixID;
 
         public readonly string suffixText;
@@ -19,8 +17,7 @@ namespace TerraLands.TLPrefixes
         /// </summary>
         public PlayerUpdateDelegate playerUpdateMethod;
 
-        public TLSuffix(int suffixID, string suffixText, SuffixRarity suffixRarity, PlayerUpdateDelegate playerUpdateMethod = null)
-        {
+        public TLSuffix(int suffixID, string suffixText, SuffixRarity suffixRarity, PlayerUpdateDelegate playerUpdateMethod = null) {
             this.suffixID = suffixID;
             this.suffixText = suffixText;
             this.suffixRarity = suffixRarity;

@@ -6,17 +6,14 @@ using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
 using Terraria.UI;
 
-namespace TerraLands.UI
-{
-    public class LevelBar : UIState
-    {
+namespace TerraLands.UI {
+    public class LevelBar : UIState {
         private UIImage levelFrame;
         private UIImage levelProgress;
         private UIElement levelProgressConstraint;
         private UIText levelText;
 
-        public override void OnInitialize()
-        {
+        public override void OnInitialize() {
             levelFrame = new UIImage(ModContent.GetTexture(nameof(TerraLands) + "/UI/Textures/LevelFrame"));
             levelFrame.Left.Set(-(levelFrame.Width.Pixels / 2f), 0.5f);
             levelFrame.Top.Set(-levelFrame.Height.Pixels, 0.95f);
@@ -38,15 +35,13 @@ namespace TerraLands.UI
             Append(levelFrame);
         }
 
-        protected override void DrawChildren(SpriteBatch spriteBatch)
-        {
+        protected override void DrawChildren(SpriteBatch spriteBatch) {
             TLPlayer localPlayer = Main.LocalPlayer.GetModPlayer<TLPlayer>();
-            levelProgressConstraint.Width.Set(0, (float)localPlayer.Experience / (float)TLUtils.XPRequiredToLevelUp(localPlayer.Level));
+            levelProgressConstraint.Width.Set(0, localPlayer.Experience / (float)TLUtils.XPRequiredToLevelUp(localPlayer.Level));
             base.DrawChildren(spriteBatch);
         }
 
-        public override void Update(GameTime gameTime)
-        {
+        public override void Update(GameTime gameTime) {
             levelText.SetText($"Level {Main.LocalPlayer.GetModPlayer<TLPlayer>().Level}");
             base.Update(gameTime);
         }
