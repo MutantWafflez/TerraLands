@@ -1,6 +1,6 @@
 ﻿using TerraLands.Enums;
 
-namespace TerraLands.TLPrefixes {
+namespace TerraLands.Affixes {
     /// <summary>
     /// Class used for the creation of custom TerraLands prefixes. Must be declared with an ID, Prefix Text Value, and Prefix Type. All stat multipliers are optional.
     /// </summary>

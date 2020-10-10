@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using TerraLands.Affixes;
 using TerraLands.Enums;
-using TerraLands.TLPrefixes;
 using Terraria.ID;
 
 namespace TerraLands.Items.Weapons.Guns {

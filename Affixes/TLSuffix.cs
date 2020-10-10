@@ -1,7 +1,7 @@
 ﻿using TerraLands.Enums;
 using Terraria;
 
-namespace TerraLands.TLPrefixes {
+namespace TerraLands.Affixes {
     public class TLSuffix {
         public readonly int suffixID;
 

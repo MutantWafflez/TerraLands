@@ -4,7 +4,7 @@ using TerraLands.Enums;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace TerraLands.TLPrefixes {
+namespace TerraLands.Affixes {
     public static class TLSuffixList {
         public static readonly TLSuffix Default = new TLSuffix(
             suffixID: -1,

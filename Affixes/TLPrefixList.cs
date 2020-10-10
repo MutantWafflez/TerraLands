@@ -2,7 +2,7 @@
 using System.Reflection;
 using TerraLands.Enums;
 
-namespace TerraLands.TLPrefixes {
+namespace TerraLands.Affixes {
     /// <summary>
     /// Class full of all of the TLPrefixes. Has a few helper methods for getting IDs, types, or text.
     /// </summary>

@@ -1,6 +1,6 @@
-﻿using TerraLands.Enums;
+﻿using TerraLands.Affixes;
+using TerraLands.Enums;
 using TerraLands.Projectiles.UniqueProj;
-using TerraLands.TLPrefixes;
 using Terraria.ID;
 using Terraria.ModLoader;
 
