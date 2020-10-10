@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +13,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using Terraria.UI.Chat;
 using Terraria.Utilities;
 
 namespace TerraLands.Items.Weapons {
@@ -31,6 +31,11 @@ namespace TerraLands.Items.Weapons {
 
         public ElementType itemElement = ElementType.Default;
         public WeightedRandom<ElementType> availableElements = new WeightedRandom<ElementType>();
+
+        /// <summary>
+        /// What level the weapon is. Used for damage scaling primarily, and the weapon cannot be used if of higher level.
+        /// </summary>
+        public int weaponLevel = 1;
 
         /// <summary>
         /// How many additional projectiles of type item.shoot are fired.
@@ -258,100 +263,32 @@ namespace TerraLands.Items.Weapons {
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) {
-            TooltipLine TLRarity = new TooltipLine(mod, "TLRarity", $"[{TLUtils.ItemRareToTLRareName(item.rare)}]") {
-                overrideColor = TLUtils.ItemRareToTLRareColor(item.rare)
-            };
-
-            TooltipLine nameLine = tooltips.FirstOrDefault(x => x.Name == "ItemName" && x.mod == "Terraria");
-            if (nameLine == null) {
-                tooltips.Add(TLRarity);
-            }
-            else {
-                tooltips.Insert(tooltips.IndexOf(nameLine) + 1, TLRarity);
-            }
-
-            if (!string.IsNullOrEmpty(flavorText)) {
-                TooltipLine flavorLine = new TooltipLine(mod, "TLFlavor", flavorText) {
-                    overrideColor = Color.Red
-                };
-                TooltipLine rarityLine = tooltips.FirstOrDefault(x => x.Name == "TLRarity" && x.mod == "TerraLands");
-                tooltips.Insert(tooltips.IndexOf(rarityLine) + 1, flavorLine);
-            }
-
-            if (itemElement != ElementType.None) {
-                TooltipLine vanillaDamage = tooltips.FirstOrDefault(x => x.Name == "Damage" && x.mod == "Terraria");
-                if (vanillaDamage == null) {
-                    tooltips.Add(new TooltipLine(mod, "TLElement", itemElement.ToString()));
+            tooltips.RemoveAll(t => t.Name != "ItemName" && t.mod == "Terraria");
+            tooltips.Add(new TooltipLine(mod, "TLStatDamage", $"Damage|{item.damage}"));
+            tooltips.Add(new TooltipLine(mod, "TLStatCrit", $"Critical Strike Chance|{item.crit + 4}%"));
+            tooltips.Add(new TooltipLine(mod, "TLStatUseTime", $"Usage Speed|{60 / item.useTime}/s"));
+            tooltips.Add(new TooltipLine(mod, "TLStatAccuracy", $"Accuracy|{Math.Round(projectileAccuracy * itemPrefix.accuracyMultiplier * 100)}%"));
+            if (flavorText.Any()) {
+                tooltips.Add(new TooltipLine(mod, "TLFlavor", flavorText) {
+                    overrideColor = new Color(255, 0, 0)
                 }
-                else {
-                    string[] splitText = vanillaDamage.text.Split(' ');
-                    string damageString = splitText.Last();
-
-                    damageString = string.Concat(itemElement.ToString().ToLower(), " ", damageString);
-                    splitText[splitText.Length - 1] = damageString;
-
-                    vanillaDamage.text = splitText.First();
-                    for (int i = 1; i < splitText.Length; i++) {
-                        vanillaDamage.text = string.Concat(vanillaDamage.text, " ", splitText[i]);
-                    }
-                }
+                );
             }
+        }
 
-            #region Stat Tooltips
+        public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset) {
+            if (line.Name.Contains("TLStat")) {
+                string[] splitText = line.text.Split('|');
+                string statName = splitText.First();
+                string statValue = splitText.Last();
 
-            string accuracyText = "Completely accurate";
-            float accuracyStat = projectileAccuracy * itemPrefix.accuracyMultiplier;
-            if (accuracyStat <= 0.2f)
-                accuracyText = "Ludicrously inaccurate";
-            else if (accuracyStat <= 0.4f)
-                accuracyText = "Extremely inaccurate";
-            else if (accuracyStat <= 0.6f)
-                accuracyText = "Moderately inaccurate";
-            else if (accuracyStat <= 0.8f)
-                accuracyText = "Mostly accurate";
-            else if (accuracyStat <= 0.9f)
-                accuracyText = "Moderately accurate";
-            else if (accuracyStat <= 0.99f)
-                accuracyText = "Highly accurate";
-
-            TooltipLine accuracyStatLine = new TooltipLine(mod, "TLAccuracyStat", accuracyText);
-            tooltips.Add(accuracyStatLine);
-
-            if (!(Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift))) {
-                TooltipLine TLHideStats = new TooltipLine(mod, "TLHideStats", "Hold Shift to see prefix stats") {
-                    overrideColor = Colors.RarityTrash
-                };
-                tooltips.Add(TLHideStats);
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.font, statName,
+                    new Vector2(line.X, line.Y), line.color, line.rotation, line.origin, line.baseScale, line.maxWidth, line.spread);
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.font, statValue,
+                    new Vector2(line.X + 250, line.Y), line.color, line.rotation, line.origin, line.baseScale, line.maxWidth, line.spread);
+                return false;
             }
-            else {
-                List<TooltipLine> StatList = new List<TooltipLine>
-                {
-                    new TooltipLine(mod, "TLPrefixDmgStat", Math.Round((itemPrefix.damageMultiplier - 1f) * 100) + "% damage"),
-                    new TooltipLine(mod, "TLPrefixCritChanceStat", itemPrefix.critChanceModification + "% critical strike chance"),
-                    new TooltipLine(mod, "TLPrefixCritDmgStat", Math.Round((itemPrefix.critDamageMultiplier - 1f) * 100) + "% critical strike damage"),
-                    new TooltipLine(mod, "TLPrefixDUseSpeedStat", Math.Round((itemPrefix.useSpeedMultiplier - 1f) * 100) + "% usage speed"),
-                    new TooltipLine(mod, "TLPrefixVelocityStat", Math.Round((itemPrefix.projVelocityMultiplier - 1f) * 100) + "% projectile velocity"),
-                    new TooltipLine(mod, "TLPrefixScaleStat", Math.Round((itemPrefix.scaleMultiplier - 1f) * 100) + "% projectile scale"),
-                    new TooltipLine(mod, "TLPrefixKnockStat", Math.Round((itemPrefix.knockbackMultiplier - 1f) * 100) + "% knockback"),
-                    new TooltipLine(mod, "TLPrefixAccStat", Math.Round((itemPrefix.accuracyMultiplier - 1f) * 100) + "% accuracy")
-                };
-                foreach (TooltipLine line in StatList) {
-                    if (line.text[0] == '0') //So that the stats with 0% values (AKA no change) don't show up
-                    {
-                        continue;
-                    }
-                    line.isModifier = true;
-                    if (line.text.Contains("-")) {
-                        line.isModifierBad = true;
-                    }
-                    else {
-                        line.text = string.Concat("+", line.text);
-                    }
-
-                    tooltips.Add(line);
-                }
-            }
-            #endregion
+            return true;
         }
 
         private void DrawRarityLight(SpriteBatch spriteBatch) {

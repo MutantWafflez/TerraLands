@@ -1,6 +1,7 @@
 ﻿using TerraLands.Affixes;
 using TerraLands.Enums;
 using TerraLands.Projectiles.UniqueProj;
+using TerraLands.Utils;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,7 +18,7 @@ namespace TerraLands.Items.Weapons.Guns.Legendaries {
         }
 
         public override void SetDefaults() {
-            item.damage = 50;
+            item.damage = TLUtils.CalculateLevelWeaponDamage(50, weaponLevel);
             item.rare = (int)ItemRarities.Legendary;
             item.shoot = ModContent.ProjectileType<KemptSharrellProj>();
             item.shootSpeed = 4f;

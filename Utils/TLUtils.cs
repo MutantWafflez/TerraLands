@@ -85,5 +85,15 @@ namespace TerraLands.Utils {
         public static int XPRequiredToLevelUp(int currentLevel) {
             return (int)(currentLevel < 30 ? (45f * Math.Pow(currentLevel + 1f, 2.75f)) - 45f : (45f * Math.Pow(currentLevel + 1f, 2.75f)) - 45f - (45f * Math.Pow(currentLevel + 1f, 1.67f)));
         }
+
+        /// <summary>
+        /// Method that applies level scaling on a given weapon's damage using the equation (damage * 1.025^weaponLevel).
+        /// </summary>
+        /// <param name="damage">The weapon's base, level 1 damage.</param>
+        /// <param name="weaponLevel">The weapon's actual level.</param>
+        /// <returns></returns>
+        public static int CalculateLevelWeaponDamage(int damage, int weaponLevel) {
+            return (int)Math.Round(damage * Math.Pow(1.025f, weaponLevel));
+        }
     }
 }
