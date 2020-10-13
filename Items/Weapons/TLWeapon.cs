@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using TerraLands.Affixes;
@@ -19,6 +20,7 @@ using Terraria.Utilities;
 namespace TerraLands.Items.Weapons {
     //Main abstract class for TerraLands Weapons
     public abstract class TLWeapon : ModItem {
+        #region Item Fields/Data
         private int rarityAlphaValue = 175;
         private int rarityAlphaDirection = 1;
 
@@ -53,6 +55,16 @@ namespace TerraLands.Items.Weapons {
         /// </summary>
         public float fixedSpread = 0f;
 
+        #region Tooltip Drawing Fields
+        private const int ItemNamePadding = 10;
+        private const int InnerBoxPadding = 2;
+
+        private Rectangle outerTooltipBox;
+        private Rectangle innerTooltipBox;
+        private Rectangle statBox;
+        #endregion
+        #endregion
+
         #region Cloning
         public override bool CloneNewInstances => true;
 
@@ -78,6 +90,8 @@ namespace TerraLands.Items.Weapons {
             if (wepClone.itemElement == ElementType.Default) {
                 wepClone.itemElement = availableElements.Get();
             }
+            wepClone.AutoDefaults();
+            wepClone.SetDefaults();
             return wepClone;
         }
         #endregion
@@ -230,8 +244,7 @@ namespace TerraLands.Items.Weapons {
         }
         #endregion
 
-        #region Per Tick Hooks
-
+        #region Update Hooks
         public override void PostUpdate() {
             item.SetNameOverride(GetAdjustedName());
         }
@@ -240,6 +253,30 @@ namespace TerraLands.Items.Weapons {
             item.SetNameOverride(GetAdjustedName());
         }
 
+        public override void ModifyTooltips(List<TooltipLine> tooltips) {
+            tooltips.RemoveAll(t => t.Name != "ItemName" && t.mod == "Terraria");
+            tooltips.Add(new TooltipLine(mod, "TLRarity", TLUtils.ItemRareToTLRareName(item.rare)) {
+                    overrideColor = TLUtils.ItemRareToTLRareColor(item.rare)
+                }
+                );
+            tooltips.Add(new TooltipLine(mod, "TLStatDamage", $"Damage|{item.damage}" + (additionalShots > 0 ? "x" + (additionalShots + 1): "")));
+            tooltips.Add(new TooltipLine(mod, "TLStatCrit", $"Crit|{item.crit + 4}%"));
+            tooltips.Add(new TooltipLine(mod, "TLStatUseTime", $"Usage Speed|{Math.Round(60f / item.useTime, 2)}/s"));
+            if (item.shoot > ProjectileID.None) {
+                tooltips.Add(new TooltipLine(mod, "TLStatAccuracy", $"Accuracy|{Math.Round(projectileAccuracy * itemPrefix.accuracyMultiplier * 100)}%"));
+            }
+            if (flavorText.Any()) {
+                tooltips.Add(new TooltipLine(mod, "TLFlavor", flavorText) {
+                    overrideColor = new Color(255, 0, 0)
+                }
+                );
+            }
+        }
+
+
+        #endregion
+
+        #region Draw Hooks
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI) {
             DrawRarityLight(spriteBatch);
             rarityAlphaValue += rarityAlphaDirection;
@@ -262,30 +299,68 @@ namespace TerraLands.Items.Weapons {
             }
         }
 
-        public override void ModifyTooltips(List<TooltipLine> tooltips) {
-            tooltips.RemoveAll(t => t.Name != "ItemName" && t.mod == "Terraria");
-            tooltips.Add(new TooltipLine(mod, "TLStatDamage", $"Damage|{item.damage}"));
-            tooltips.Add(new TooltipLine(mod, "TLStatCrit", $"Critical Strike Chance|{item.crit + 4}%"));
-            tooltips.Add(new TooltipLine(mod, "TLStatUseTime", $"Usage Speed|{60 / item.useTime}/s"));
-            tooltips.Add(new TooltipLine(mod, "TLStatAccuracy", $"Accuracy|{Math.Round(projectileAccuracy * itemPrefix.accuracyMultiplier * 100)}%"));
-            if (flavorText.Any()) {
-                tooltips.Add(new TooltipLine(mod, "TLFlavor", flavorText) {
-                    overrideColor = new Color(255, 0, 0)
-                }
-                );
-            }
+        //Completely custom tooltip drawing with a special background
+        public override bool PreDrawTooltip(ReadOnlyCollection<TooltipLine> lines, ref int x, ref int y) {
+            Vector2 sizeOfItemName = ChatManager.GetStringSize(Main.fontMouseText, lines.FirstOrDefault(z => z.Name == "ItemName" && z.mod == "Terraria").text, Vector2.One);
+            int amountOfStatLines = lines.Count(t => t.Name.Contains("TLStat"));
+
+            int heightOfOuterBox = (int)lines.Select(t => t.text).ToList().Sum(t => ChatManager.GetStringSize(Main.fontMouseText, t, Vector2.One, outerTooltipBox.Width - ItemNamePadding * 2).Y);
+            int widthOfOuterBox = ItemNamePadding * 2 + sizeOfItemName.X > 350 ? ItemNamePadding * 2 + (int)sizeOfItemName.X : 350;
+            outerTooltipBox = new Rectangle(x - ItemNamePadding, y - ItemNamePadding, widthOfOuterBox, heightOfOuterBox + ItemNamePadding);
+
+            int widthOfInnerBox = widthOfOuterBox - InnerBoxPadding * 2;
+            innerTooltipBox = new Rectangle(outerTooltipBox.X + InnerBoxPadding, outerTooltipBox.Y + InnerBoxPadding, widthOfInnerBox, outerTooltipBox.Height - InnerBoxPadding * 2);
+
+            Vector2 positionOfStatBox = new Vector2(innerTooltipBox.X, innerTooltipBox.Y + ItemNamePadding + sizeOfItemName.Y);
+            statBox = new Rectangle((int)positionOfStatBox.X, (int)positionOfStatBox.Y, innerTooltipBox.Width, (int)sizeOfItemName.Y * amountOfStatLines - ((int)sizeOfItemName.Y / 4));
+            
+            //Add Sheen Shader effect of the first box (effectively the Outline)
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
+            GameShaders.Misc["ItemTooltipSheen"].Apply();
+            Main.spriteBatch.Draw(Main.magicPixel, outerTooltipBox, TLUtils.ItemRareToTLRareColor(item.rare));
+            Main.spriteBatch.End();
+            
+            //Draw box that will contain the actual lines
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
+            Main.spriteBatch.Draw(Main.magicPixel, innerTooltipBox, new Color(45, 45, 45));
+
+            //Draw box that will contain the stat lines
+            Main.spriteBatch.Draw(Main.magicPixel, statBox, new Color(70, 70, 70));
+
+            return true;
         }
 
         public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset) {
-            if (line.Name.Contains("TLStat")) {
-                string[] splitText = line.text.Split('|');
-                string statName = splitText.First();
-                string statValue = splitText.Last();
+            if (line.Name.Contains("TLStat") || line.Name == "TLRarity" || (line.Name == "ItemName" && line.mod == "Terraria")) {
+                if (line.Name == "ItemName") {
+                    line.X += (innerTooltipBox.Width / 2) - ItemNamePadding - (int)line.font.MeasureString(line.text).X / 2;
+                }
+                else if (line.Name == "TLRarity") {
+                    line.X += (int)(statBox.Width * 0.75f);
+                    line.baseScale *= 0.75f;
+                    //Since the rarity line will be displaced off to the side, don't want it to affect the other lines Y placement
+                    yOffset -= (int)line.font.MeasureString(line.text).Y;
+                }
+                else {
+                    //Revert possible negative value from the TLRarity line
+                    yOffset = 0;
 
-                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.font, statName,
-                    new Vector2(line.X, line.Y), line.color, line.rotation, line.origin, line.baseScale, line.maxWidth, line.spread);
-                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.font, statValue,
-                    new Vector2(line.X + 250, line.Y), line.color, line.rotation, line.origin, line.baseScale, line.maxWidth, line.spread);
+                    string[] splitText = line.text.Split('|');
+                    string statName = splitText.First();
+                    string statValue = splitText.Last();
+
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.font, statName,
+                        new Vector2(line.X, line.Y), line.color, line.rotation, line.origin, line.baseScale, line.maxWidth, line.spread);
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.font, statValue,
+                        new Vector2(line.X + (statBox.Width * 0.67f) - ChatManager.GetStringSize(line.font, statValue, line.baseScale).X, line.Y), line.color, line.rotation, line.origin, line.baseScale, line.maxWidth, line.spread);
+                    return false;
+                }
+            }
+            else {
+                Color selectedColor = line.overrideColor != null ? (Color)line.overrideColor : line.color;
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.font, line.text,
+                        new Vector2(line.X, line.Y), selectedColor, line.rotation, line.origin, line.baseScale, outerTooltipBox.Width - ItemNamePadding * 2, line.spread);
                 return false;
             }
             return true;

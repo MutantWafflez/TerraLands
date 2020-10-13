@@ -27,6 +27,9 @@ namespace TerraLands {
             if (Main.netMode != NetmodeID.Server) {
                 Ref<Effect> nisRef = new Ref<Effect>(GetEffect("Effects/Items/NewItemSheen"));
                 GameShaders.Misc["NewItemSheen"] = new MiscShaderData(nisRef, "NewItemSheen");
+
+                Ref<Effect> tooltipSheenRef = new Ref<Effect>(GetEffect("Effects/Items/ItemTooltipSheen"));
+                GameShaders.Misc["ItemTooltipSheen"] = new MiscShaderData(tooltipSheenRef, "ItemTooltipSheen");
             }
             #endregion
 

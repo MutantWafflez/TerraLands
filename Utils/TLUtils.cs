@@ -21,7 +21,7 @@ namespace TerraLands.Utils {
             else if (itemRare == ItemRarityID.Pink)
                 return Colors.RarityPink;
             else if (itemRare == ItemRarityID.Cyan)
-                return Colors.RarityCyan;
+                return new Color(50, 255, 255); //Cyan isn't quite the color used in Borderlands, its more of a light blue. This is that value.
             else if (itemRare == ItemRarityID.Expert)
                 return Main.DiscoColor;
             else
