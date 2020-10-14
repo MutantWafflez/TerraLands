@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.IO;
 using TerraLands.Enums;
+using TerraLands.Projectiles;
 using TerraLands.UI;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -38,10 +39,12 @@ namespace TerraLands {
             #endregion
 
             #region UI
-            levelBar = new LevelBar();
-            levelBar.Activate();
-            levelInterface = new UserInterface();
-            levelInterface.SetState(levelBar);
+            if (Main.netMode != NetmodeID.Server) {
+                levelBar = new LevelBar();
+                levelBar.Activate();
+                levelInterface = new UserInterface();
+                levelInterface.SetState(levelBar);
+            }
             #endregion
 
         }
@@ -68,6 +71,20 @@ namespace TerraLands {
                         packet.Write(modPlayer.Level);
                         packet.Write(modPlayer.Experience);
                         packet.Send(-1, playerIndex);
+                    }
+                    break;
+                case TLPacketType.SyncProjectileExplosion:
+                    if (Main.netMode == NetmodeID.Server) {
+                        int projectileIndex = reader.ReadInt32();
+                        ModPacket packet = GetPacket();
+                        packet.Write((byte)TLPacketType.SyncProjectileExplosion);
+                        packet.Write(projectileIndex);
+                        packet.Send(ignoreClient: whoAmI);
+                    }
+                    else {
+                        int projectileIndex = reader.ReadInt32();
+                        Projectile projectileAtIndex = Main.projectile[projectileIndex];
+                        (projectileAtIndex.modProjectile as TLProjectile).AddExplosiveFlair(projectileAtIndex, true);
                     }
                     break;
                 default:

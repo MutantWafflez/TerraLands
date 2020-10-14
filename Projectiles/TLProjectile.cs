@@ -35,18 +35,33 @@ namespace TerraLands.Projectiles {
             target.GetGlobalNPC<TLGlobalNPC>().elementHitBy = projectileElement;
         }
 
-        private void ExplodeProjectile() {
-            if (explosiveTimer == 0) {
+        /// <summary>
+        /// Method that adds the visual effect of the explosion as well as sound if need be.
+        /// </summary>
+        /// <param name="projectile">Projectile that is currently exploding.</param>
+        /// <param name="addSound">Whether or not to play sound.</param>
+        public void AddExplosiveFlair(Projectile projectile, bool addSound = false) {
+            if (addSound) {
                 Main.PlaySound(SoundID.Item62.WithVolume(0.5f), projectile.Center);
             }
+            for (int i = 0; i < 10; i++) {
+                Dust.NewDust(projectile.position, projectile.width, projectile.height, DustID.Dirt);
+            }
+        }
+
+        private void ExplodeProjectile() {
             projectile.position = projectile.Center;
             projectile.width = 60;
             projectile.height = 60;
             projectile.Center = projectile.position;
-            projectile.hide = true;
+            projectile.alpha = 255;
             projectile.velocity = Vector2.Zero;
-            for (int i = 0; i < 10; i++) {
-                Dust.NewDust(projectile.position, projectile.width, projectile.height, DustID.Dirt);
+            AddExplosiveFlair(projectile, explosiveTimer == 0);
+            if (Main.netMode == NetmodeID.MultiplayerClient) {
+                ModPacket packet = mod.GetPacket();
+                packet.Write((byte)TLPacketType.SyncProjectileExplosion);
+                packet.Write(projectile.whoAmI);
+                packet.Send();
             }
         }
     }

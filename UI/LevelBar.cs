@@ -23,10 +23,11 @@ namespace TerraLands.UI {
             levelText.Top.Set(0f, 1f);
             levelFrame.Append(levelText);
 
-            levelProgressConstraint = new UIElement();
-            levelProgressConstraint.Width = levelFrame.Width;
-            levelProgressConstraint.Height = levelFrame.Height;
-            levelProgressConstraint.OverflowHidden = true;
+            levelProgressConstraint = new UIElement {
+                Width = levelFrame.Width,
+                Height = levelFrame.Height,
+                OverflowHidden = true
+            };
             levelFrame.Append(levelProgressConstraint);
 
             levelProgress = new UIImage(ModContent.GetTexture(nameof(TerraLands) + "/UI/Textures/LevelProgress"));
